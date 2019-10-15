@@ -1272,6 +1272,7 @@ typedef enum zfs_ioc {
 	ZFS_IOC_POOL_DISCARD_CHECKPOINT,	/* 0x5a4e */
 	ZFS_IOC_POOL_INITIALIZE,		/* 0x5a4f */
 	ZFS_IOC_POOL_TRIM,			/* 0x5a50 */
+	ZFS_IOC_POOL_DDTLOAD,			/* 0x5a54 */
 
 	/*
 	 * Linux - 3/64 numbers reserved.
