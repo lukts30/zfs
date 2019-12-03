@@ -271,6 +271,17 @@ Default value: \fB16,777,217\fR.
 .sp
 .ne 2
 .na
+\fBzfs_keep_log_spacemaps_at_export\fR (int)
+.ad
+.RS 12n
+Prevent log spacemaps from being destroyed during pool exports and destroys.
+.sp
+Use \fB1\fR for yes and \fB0\fR for no (default).
+.RE
+
+.sp
+.ne 2
+.na
 \fBzfs_metaslab_segment_weight_enabled\fR (int)
 .ad
 .RS 12n
@@ -328,12 +339,88 @@ Use \fB1\fR for yes (default) and \fB0\fR for no.
 .sp
 .ne 2
 .na
+\fBmetaslab_df_max_search\fR (int)
+.ad
+.RS 12n
+Maximum distance to search forward from the last offset. Without this limit,
+fragmented pools can see >100,000 iterations and metaslab_block_picker()
+becomes the performance limiting factor on high-performance storage.
+
+With the default setting of 16MB, we typically see less than 500 iterations,
+even with very fragmented, ashift=9 pools. The maximum number of iterations
+possible is: \fBmetaslab_df_max_search / (2 * (1<<ashift))\fR.
+With the default setting of 16MB this is 16*1024 (with ashift=9) or 2048
+(with ashift=12).
+.sp
+Default value: \fB16,777,216\fR (16MB)
+.RE
+
+.sp
+.ne 2
+.na
+\fBmetaslab_df_use_largest_segment\fR (int)
+.ad
+.RS 12n
+If we are not searching forward (due to metaslab_df_max_search,
+metaslab_df_free_pct, or metaslab_df_alloc_threshold), this tunable controls
+what segment is used.  If it is set, we will use the largest free segment. 
+If it is not set, we will use a segment of exactly the requested size (or
+larger).
+.sp
+Use \fB1\fR for yes and \fB0\fR for no (default).
+.RE
+
+.sp
+.ne 2
+.na
+\fBzfs_metaslab_max_size_cache_sec\fR (ulong)
+.ad
+.RS 12n
+When we unload a metaslab, we cache the size of the largest free chunk. We use
+that cached size to determine whether or not to load a metaslab for a given
+allocation. As more frees accumulate in that metaslab while it's unloaded, the
+cached max size becomes less and less accurate. After a number of seconds
+controlled by this tunable, we stop considering the cached max size and start
+considering only the histogram instead.
+.sp
+Default value: \fB3600 seconds\fR (one hour)
+.RE
+
+.sp
+.ne 2
+.na
+\fBzfs_metaslab_mem_limit\fR (int)
+.ad
+.RS 12n
+When we are loading a new metaslab, we check the amount of memory being used
+to store metaslab range trees. If it is over a threshold, we attempt to unload
+the least recently used metaslab to prevent the system from clogging all of
+its memory with range trees. This tunable sets the percentage of total system
+memory that is the threshold.
+.sp
+Default value: \fB25 percent\fR
+.RE
+
+.sp
+.ne 2
+.na
 \fBzfs_vdev_default_ms_count\fR (int)
 .ad
 .RS 12n
 When a vdev is added target this number of metaslabs per top-level vdev.
 .sp
 Default value: \fB200\fR.
+.RE
+
+.sp
+.ne 2
+.na
+\fBzfs_vdev_default_ms_shift\fR (int)
+.ad
+.RS 12n
+Default limit for metaslab size.
+.sp
+Default value: \fB29\fR [meaning (1 << 29) = 512MB].
 .RE
 
 .sp
@@ -380,6 +467,34 @@ greater bandwidth as is typically the case on a modern constant
 angular velocity disk drive.
 .sp
 Use \fB1\fR for yes (default) and \fB0\fR for no.
+.RE
+
+.sp
+.ne 2
+.na
+\fBmetaslab_unload_delay\fR (int)
+.ad
+.RS 12n
+After a metaslab is used, we keep it loaded for this many txgs, to attempt to
+reduce unnecessary reloading. Note that both this many txgs and
+\fBmetaslab_unload_delay_ms\fR milliseconds must pass before unloading will
+occur.
+.sp
+Default value: \fB32\fR.
+.RE
+
+.sp
+.ne 2
+.na
+\fBmetaslab_unload_delay_ms\fR (int)
+.ad
+.RS 12n
+After a metaslab is used, we keep it loaded for this many milliseconds, to
+attempt to reduce unnecessary reloading. Note that both this many
+milliseconds and \fBmetaslab_unload_delay\fR txgs must pass before unloading
+will occur.
+.sp
+Default value: \fB600000\fR (ten minutes).
 .RE
 
 .sp
@@ -471,13 +586,13 @@ Default value: \fB1\fR.
 .sp
 .ne 2
 .na
-\fBspa_load_verify_maxinflight\fR (int)
+\fBspa_load_verify_shift\fR (int)
 .ad
 .RS 12n
-Maximum concurrent I/Os during the traversal performed during an "extreme
-rewind" (\fB-X\fR) pool import.
+Sets the maximum number of bytes to consume during pool import to the log2
+fraction of the target arc size.
 .sp
-Default value: \fB10000\fR.
+Default value: \fB4\fR.
 .RE
 
 .sp
@@ -1198,6 +1313,93 @@ Default value: 20
 .sp
 .ne 2
 .na
+\fBzfs_unflushed_max_mem_amt\fR (ulong)
+.ad
+.RS 12n
+Upper-bound limit for unflushed metadata changes to be held by the
+log spacemap in memory (in bytes).
+.sp
+Default value: \fB1,073,741,824\fR (1GB).
+.RE
+
+.sp
+.ne 2
+.na
+\fBzfs_unflushed_max_mem_ppm\fR (ulong)
+.ad
+.RS 12n
+Percentage of the overall system memory that ZFS allows to be used
+for unflushed metadata changes by the log spacemap.
+(value is calculated over 1000000 for finer granularity).
+.sp
+Default value: \fB1000\fR (which is divided by 1000000, resulting in
+the limit to be \fB0.1\fR% of memory)
+.RE
+
+.sp
+.ne 2
+.na
+\fBzfs_unflushed_log_block_max\fR (ulong)
+.ad
+.RS 12n
+Describes the maximum number of log spacemap blocks allowed for each pool.
+The default value of 262144 means that the space in all the log spacemaps
+can add up to no more than 262144 blocks (which means 32GB of logical
+space before compression and ditto blocks, assuming that blocksize is
+128k).
+.sp
+This tunable is important because it involves a trade-off between import
+time after an unclean export and the frequency of flushing metaslabs.
+The higher this number is, the more log blocks we allow when the pool is
+active which means that we flush metaslabs less often and thus decrease
+the number of I/Os for spacemap updates per TXG.
+At the same time though, that means that in the event of an unclean export,
+there will be more log spacemap blocks for us to read, inducing overhead
+in the import time of the pool.
+The lower the number, the amount of flushing increases destroying log
+blocks quicker as they become obsolete faster, which leaves less blocks
+to be read during import time after a crash.
+.sp
+Each log spacemap block existing during pool import leads to approximately
+one extra logical I/O issued.
+This is the reason why this tunable is exposed in terms of blocks rather
+than space used.
+.sp
+Default value: \fB262144\fR (256K).
+.RE
+
+.sp
+.ne 2
+.na
+\fBzfs_unflushed_log_block_min\fR (ulong)
+.ad
+.RS 12n
+If the number of metaslabs is small and our incoming rate is high, we
+could get into a situation that we are flushing all our metaslabs every
+TXG.
+Thus we always allow at least this many log blocks.
+.sp
+Default value: \fB1000\fR.
+.RE
+
+.sp
+.ne 2
+.na
+\fBzfs_unflushed_log_block_pct\fR (ulong)
+.ad
+.RS 12n
+Tunable used to determine the number of blocks that can be used for
+the spacemap log, expressed as a percentage of the total number of
+metaslabs in the pool.
+.sp
+Default value: \fB400\fR (read as \fB400\fR% - meaning that the number
+of log spacemap blocks are capped at 4 times the number of
+metaslabs in the pool).
+.RE
+
+.sp
+.ne 2
+.na
 \fBzfs_unlink_suspend_progress\fR (uint)
 .ad
 .RS 12n
@@ -1683,6 +1885,10 @@ _
 _
 2048	ZFS_DEBUG_TRIM
 	Verify TRIM ranges are always within the allocatable range tree.
+_
+4096	ZFS_DEBUG_LOG_SPACEMAP
+	Verify that the log summary is consistent with the spacemap log
+	and enable zfs_dbgmsgs for metaslab loading and flushing.
 .TE
 .sp
 * Requires debug build.
@@ -1801,6 +2007,29 @@ Default value: \fB50\fR.
 .sp
 .ne 2
 .na
+\fBzfs_max_log_walking\fR (ulong)
+.ad
+.RS 12n
+The number of past TXGs that the flushing algorithm of the log spacemap
+feature uses to estimate incoming log blocks.
+.sp
+Default value: \fB5\fR.
+.RE
+
+.sp
+.ne 2
+.na
+\fBzfs_max_logsm_summary_length\fR (ulong)
+.ad
+.RS 12n
+Maximum number of rows allowed in the summary of the spacemap log.
+.sp
+Default value: \fB10\fR.
+.RE
+
+.sp
+.ne 2
+.na
 \fBzfs_max_recordsize\fR (int)
 .ad
 .RS 12n
@@ -1814,6 +2043,21 @@ this tunable, and pools with larger blocks can always be imported and used,
 regardless of this setting.
 .sp
 Default value: \fB1,048,576\fR.
+.RE
+
+.sp
+.ne 2
+.na
+
+.sp
+.ne 2
+.na
+\fBzfs_min_metaslabs_to_flush\fR (ulong)
+.ad
+.RS 12n
+Minimum number of metaslabs to flush per dirty TXG
+.sp
+Default value: \fB1\fR.
 .RE
 
 .sp
