@@ -48,6 +48,7 @@ KERNEL_C = \
 	bplist.c \
 	bpobj.c \
 	bptree.c \
+	btree.c \
 	bqueue.c \
 	cityhash.c \
 	dbuf.c \
@@ -99,6 +100,7 @@ KERNEL_C = \
 	spa_config.c \
 	spa_errlog.c \
 	spa_history.c \
+	spa_log_spacemap.c \
 	spa_misc.c \
 	spa_stats.c \
 	space_map.c \
