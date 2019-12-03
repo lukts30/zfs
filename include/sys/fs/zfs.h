@@ -769,6 +769,8 @@ typedef struct zpool_load_policy {
 	"com.delphix:obsolete_counts_are_precise"
 #define	VDEV_TOP_ZAP_POOL_CHECKPOINT_SM \
 	"com.delphix:pool_checkpoint_sm"
+#define	VDEV_TOP_ZAP_MS_UNFLUSHED_PHYS_TXGS \
+	"com.delphix:ms_unflushed_phys_txgs"
 
 #define	VDEV_TOP_ZAP_ALLOCATION_BIAS \
 	"org.zfsonlinux:allocation_bias"
@@ -1142,6 +1144,7 @@ typedef struct ddt_histogram {
 #define	ZFS_DRIVER	"zfs"
 #define	ZFS_DEV		"/dev/zfs"
 #define	ZFS_SHARETAB	"/etc/dfs/sharetab"
+#define	ZFS_SHARETAB_LOCK	"/etc/dfs/sharetab.lck"
 
 #define	ZFS_SUPER_MAGIC	0x2fc12fc1
 

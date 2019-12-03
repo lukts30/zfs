@@ -20,7 +20,7 @@
  */
 /*
  * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2018 by Delphix. All rights reserved.
+ * Copyright (c) 2011, 2019 by Delphix. All rights reserved.
  * Copyright 2011 Nexenta Systems, Inc.  All rights reserved.
  * Copyright (c) 2014 Spectra Logic Corporation, All rights reserved.
  * Copyright 2013 Saso Kiselkov. All rights reserved.
@@ -34,6 +34,7 @@
 
 #include <sys/spa.h>
 #include <sys/spa_checkpoint.h>
+#include <sys/spa_log_spacemap.h>
 #include <sys/vdev.h>
 #include <sys/vdev_removal.h>
 #include <sys/metaslab.h>
@@ -271,7 +272,9 @@ struct spa {
 	boolean_t	spa_extreme_rewind;	/* rewind past deferred frees */
 	kmutex_t	spa_scrub_lock;		/* resilver/scrub lock */
 	uint64_t	spa_scrub_inflight;	/* in-flight scrub bytes */
-	uint64_t	spa_load_verify_ios;	/* in-flight verification IOs */
+
+	/* in-flight verification bytes */
+	uint64_t	spa_load_verify_bytes;
 	kcondvar_t	spa_scrub_io_cv;	/* scrub I/O completion */
 	uint8_t		spa_scrub_active;	/* active or suspended? */
 	uint8_t		spa_scrub_type;		/* type of scrub we're doing */
@@ -308,6 +311,14 @@ struct spa {
 	uint64_t	spa_checkpoint_txg;	/* the txg of the checkpoint */
 	spa_checkpoint_info_t spa_checkpoint_info; /* checkpoint accounting */
 	zthr_t		*spa_checkpoint_discard_zthr;
+
+	space_map_t	*spa_syncing_log_sm;	/* current log space map */
+	avl_tree_t	spa_sm_logs_by_txg;
+	kmutex_t	spa_flushed_ms_lock;	/* for metaslabs_by_flushed */
+	avl_tree_t	spa_metaslabs_by_flushed;
+	spa_unflushed_stats_t	spa_unflushed_stats;
+	list_t		spa_log_summary;
+	uint64_t	spa_log_flushall_txg;
 
 	char		*spa_root;		/* alternate root directory */
 	uint64_t	spa_ena;		/* spa-wide ereport ENA */
