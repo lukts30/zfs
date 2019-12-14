@@ -502,6 +502,11 @@ void dmu_object_set_compress(objset_t *os, uint64_t object, uint8_t compress,
 
 
 int dmu_object_remap_indirects(objset_t *os, uint64_t object, uint64_t txg);
+/*
+ * Get an estimated cache size for an object.  Caller must expect races.
+ */
+void dmu_object_cached_size(objset_t *os, uint64_t object,
+    uint64_t *l1sz, uint64_t *l2sz);
 
 void dmu_write_embedded(objset_t *os, uint64_t object, uint64_t offset,
     void *data, uint8_t etype, uint8_t comp, int uncompressed_size,
