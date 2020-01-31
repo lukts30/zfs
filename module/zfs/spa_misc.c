@@ -537,7 +537,7 @@ _spa_config_tryenter(spa_t *spa, int locks, void *tag, krw_t rw,
 }
 
 void
-spa_config_exit(spa_t *spa, int locks, void *tag)
+spa_config_exit(spa_t *spa, int locks, const void *tag)
 {
 	for (int i = SCL_LOCKS - 1; i >= 0; i--) {
 		spa_config_lock_t *scl = &spa->spa_config_lock[i];

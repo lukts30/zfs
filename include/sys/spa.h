@@ -26,7 +26,7 @@
  * Copyright 2013 Saso Kiselkov. All rights reserved.
  * Copyright (c) 2014 Integros [integros.com]
  * Copyright 2017 Joyent, Inc.
- * Copyright (c) 2017 Datto Inc.
+ * Copyright (c) 2017, 2019, Datto Inc. All rights reserved.
  * Copyright (c) 2017, Intel Corporation.
  */
 
@@ -364,8 +364,8 @@ _NOTE(CONSTCOND) } while (0)
 
 typedef enum bp_embedded_type {
 	BP_EMBEDDED_TYPE_DATA,
-	BP_EMBEDDED_TYPE_RESERVED, /* Reserved for an unintegrated feature. */
-	NUM_BP_EMBEDDED_TYPES = BP_EMBEDDED_TYPE_RESERVED
+	BP_EMBEDDED_TYPE_RESERVED, /* Reserved for Delphix byteswap feature. */
+	NUM_BP_EMBEDDED_TYPES
 } bp_embedded_type_t;
 
 #define	BPE_NUM_WORDS 14
@@ -740,6 +740,7 @@ extern void spa_async_request(spa_t *spa, int flag);
 extern void spa_async_unrequest(spa_t *spa, int flag);
 extern void spa_async_suspend(spa_t *spa);
 extern void spa_async_resume(spa_t *spa);
+extern int spa_async_tasks(spa_t *spa);
 extern spa_t *spa_inject_addref(char *pool);
 extern void spa_inject_delref(spa_t *spa);
 extern void spa_scan_stat_init(spa_t *spa);
@@ -1077,7 +1078,6 @@ extern boolean_t spa_has_checkpoint(spa_t *spa);
 extern boolean_t spa_importing_readonly_checkpoint(spa_t *spa);
 extern boolean_t spa_suspend_async_destroy(spa_t *spa);
 extern uint64_t spa_min_claim_txg(spa_t *spa);
-extern void zfs_blkptr_verify(spa_t *spa, const blkptr_t *bp);
 extern boolean_t zfs_dva_valid(spa_t *spa, const dva_t *dva,
     const blkptr_t *bp);
 typedef void (*spa_remap_cb_t)(uint64_t vdev, uint64_t offset, uint64_t size,
