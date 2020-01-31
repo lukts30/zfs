@@ -945,19 +945,19 @@ extern int spa_import_progress_set_state(uint64_t pool_guid,
     spa_load_state_t spa_load_state);
 
 /* Pool configuration locks */
-extern int _spa_config_tryenter(spa_t *spa, int locks, void *tag, krw_t rw,
+extern int _spa_config_tryenter(spa_t *spa, int locks, const void *tag, krw_t rw,
     const char *file, size_t line);
 #define spa_config_tryenter(spa, locks, tag, rw)		\
 	_spa_config_tryenter(spa, locks, tag, rw, __FILE__, __LINE__)
-extern int _spa_config_enter_flags(spa_t *spa, int locks, void *tag, krw_t rw,
+extern int _spa_config_enter_flags(spa_t *spa, int locks, const void *tag, krw_t rw,
     spa_config_flag_t flags, const char *file, size_t line);
 #define	spa_config_enter_flags(spa, locks, tag, rw, flags)	\
 	_spa_config_enter_flags(spa, locks, tag, rw, flags, __FILE__, __LINE__)
-extern void _spa_config_enter(spa_t *spa, int locks, void *tag, krw_t rw,
+extern void _spa_config_enter(spa_t *spa, int locks, const void *tag, krw_t rw,
     const char *file, size_t line);
 #define spa_config_enter(spa, locks, tag, rw)			\
 	_spa_config_enter(spa, locks, tag, rw, __FILE__, __LINE__)
-extern void spa_config_exit(spa_t *spa, int locks, void *tag);
+extern void spa_config_exit(spa_t *spa, int locks, const void *tag);
 extern int spa_config_held(spa_t *spa, int locks, krw_t rw);
 
 /* Pool vdev add/remove lock */

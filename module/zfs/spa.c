@@ -6375,7 +6375,7 @@ spa_vdev_attach(spa_t *spa, uint64_t guid, nvlist_t *nvroot, int replacing)
 	 * ensure that dmu_sync-ed blocks have been stitched into the
 	 * respective datasets.
 	 */
-	error = dsl_resilver_restart(spa->spa_dsl_pool, dtl_max_txg);
+	error = dsl_scan_restart_resilver(spa->spa_dsl_pool, dtl_max_txg);
 	if (error != 0)
 		return (spa_vdev_exit(spa, newrootvd, txg, error));
 

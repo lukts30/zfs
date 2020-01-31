@@ -470,7 +470,7 @@ spa_config_eval_flags(spa_t *spa, spa_config_flag_t flags)
 }
 
 int
-_spa_config_enter_flags(spa_t *spa, int locks, void *tag, krw_t rw,
+_spa_config_enter_flags(spa_t *spa, int locks, const void *tag, krw_t rw,
     spa_config_flag_t flags, const char *file, size_t line)
 {
 	int error = 0;
@@ -521,14 +521,14 @@ _spa_config_enter_flags(spa_t *spa, int locks, void *tag, krw_t rw,
 }
 
 void
-_spa_config_enter(spa_t *spa, int locks, void *tag, krw_t rw,
+_spa_config_enter(spa_t *spa, int locks, const void *tag, krw_t rw,
     const char *file, size_t line)
 {
 	_spa_config_enter_flags(spa, locks, tag, rw, /*flags*/0, file, line);
 }
 
 int
-_spa_config_tryenter(spa_t *spa, int locks, void *tag, krw_t rw,
+_spa_config_tryenter(spa_t *spa, int locks, const void *tag, krw_t rw,
     const char *file, size_t line)
 {
 
