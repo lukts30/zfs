@@ -683,7 +683,8 @@ zfs_zevent_wait(zfs_zevent_t *ze)
 			break;
 		}
 
-		error = cv_wait_sig(&zevent_cv, &zevent_lock);
+		error = cv_timedwait_sig(&zevent_cv, &zevent_lock,
+		    ddi_get_lbolt() + MSEC_TO_TICK(10));
 		if (signal_pending(current)) {
 			error = SET_ERROR(EINTR);
 			break;
