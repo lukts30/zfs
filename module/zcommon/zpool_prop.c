@@ -143,6 +143,10 @@ zpool_prop_init(void)
 	    PROP_ONETIME, ZFS_TYPE_POOL, "TNAME");
 	zprop_register_hidden(ZPOOL_PROP_MAXDNODESIZE, "maxdnodesize",
 	    PROP_TYPE_NUMBER, PROP_READONLY, ZFS_TYPE_POOL, "MAXDNODESIZE");
+	zprop_register_hidden(ZPOOL_PROP_DEDUPDITTO, "dedupditto",
+	    PROP_TYPE_NUMBER, PROP_DEFAULT, ZFS_TYPE_POOL, "DEDUPDITTO");
+	zprop_register_hidden(ZPOOL_PROP_DEDUPCACHED, "dedupcached",
+	    PROP_TYPE_NUMBER, PROP_READONLY, ZFS_TYPE_POOL, "DEDUPCACHED");
 }
 
 /*
