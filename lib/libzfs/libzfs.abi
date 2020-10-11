@@ -3133,7 +3133,7 @@
     <type-decl name='unsigned char' size-in-bits='8' id='002ac4a6'/>
     <type-decl name='unsigned int' size-in-bits='32' id='f0981eeb'/>
     <type-decl name='unsigned long int' size-in-bits='64' id='7359adad'/>
-    <class-decl name='libzfs_handle' size-in-bits='18240' is-struct='yes' visibility='default' id='c8a9d9d8'>
+    <class-decl name='libzfs_handle' size-in-bits='18304' is-struct='yes' visibility='default' id='c8a9d9d8'>
       <data-member access='public' layout-offset-in-bits='0'>
         <var-decl name='libzfs_error' type-id='95e97e5e' visibility='default'/>
       </data-member>
@@ -3190,6 +3190,9 @@
       </data-member>
       <data-member access='public' layout-offset-in-bits='18176'>
         <var-decl name='libfetch_load_error' type-id='26a90f95' visibility='default'/>
+      </data-member>
+      <data-member access='public' layout-offset-in-bits='18240'>
+        <var-decl name='libzfs_force_export' type-id='c19b74c3' visibility='default'/>
       </data-member>
     </class-decl>
     <class-decl name='zpool_handle' size-in-bits='2560' is-struct='yes' visibility='default' id='67002a8a'>
@@ -5193,7 +5196,8 @@
       <enumerator name='ZPOOL_STATUS_NON_NATIVE_ASHIFT' value='29'/>
       <enumerator name='ZPOOL_STATUS_COMPATIBILITY_ERR' value='30'/>
       <enumerator name='ZPOOL_STATUS_INCOMPATIBLE_FEAT' value='31'/>
-      <enumerator name='ZPOOL_STATUS_OK' value='32'/>
+      <enumerator name='ZPOOL_STATUS_FORCE_EXPORTING' value='32'/>
+      <enumerator name='ZPOOL_STATUS_OK' value='33'/>
     </enum-decl>
     <typedef-decl name='zpool_errata_t' type-id='d9abbf54' id='688c495b'/>
     <enum-decl name='zpool_errata' id='d9abbf54'>
