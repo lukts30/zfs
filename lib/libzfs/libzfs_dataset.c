@@ -533,6 +533,7 @@ make_dataset_simple_handle_zc(zfs_handle_t *pzhp, zfs_cmd_t *zc)
 	zhp->zfs_head_type = pzhp->zfs_type;
 	zhp->zfs_type = ZFS_TYPE_SNAPSHOT;
 	zhp->zpool_hdl = zpool_handle(zhp);
+	zhp->zfs_dmustats = zc->zc_objset_stats; /* structure assignment */
 
 	return (zhp);
 }
@@ -2079,7 +2080,8 @@ getprop_string(zfs_handle_t *zhp, zfs_prop_t prop, char **source)
 static boolean_t
 zfs_is_recvd_props_mode(zfs_handle_t *zhp)
 {
-	return (zhp->zfs_props == zhp->zfs_recvd_props);
+	return (zhp->zfs_props != NULL &&
+	    zhp->zfs_props == zhp->zfs_recvd_props);
 }
 
 static void
@@ -2282,6 +2284,14 @@ get_numeric_property(zfs_handle_t *zhp, zfs_prop_t prop, zprop_source_t *src,
 
 	case ZFS_PROP_REDACTED:
 		*val = zhp->zfs_dmustats.dds_redacted;
+		break;
+
+	case ZFS_PROP_GUID:
+		*val = zhp->zfs_dmustats.dds_guid;
+		break;
+
+	case ZFS_PROP_CREATETXG:
+		*val = zhp->zfs_dmustats.dds_creation_txg;
 		break;
 
 	default:
@@ -2714,9 +2724,7 @@ zfs_prop_get(zfs_handle_t *zhp, zfs_prop_t prop, char *propbuf, size_t proplen,
 		break;
 
 	case ZFS_PROP_ORIGIN:
-		str = getprop_string(zhp, prop, &source);
-		if (str == NULL)
-			return (-1);
+		str = (const char *)&zhp->zfs_dmustats.dds_origin;
 		(void) strlcpy(propbuf, str, proplen);
 		zcp_check(zhp, prop, 0, str);
 		break;

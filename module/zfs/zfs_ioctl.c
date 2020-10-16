@@ -2322,6 +2322,7 @@ zfs_ioc_snapshot_list_next(zfs_cmd_t *zc)
 		}
 
 		if (zc->zc_simple) {
+			dsl_dataset_fast_stat(ds, &zc->zc_objset_stats);
 			dsl_dataset_rele(ds, FTAG);
 			break;
 		}

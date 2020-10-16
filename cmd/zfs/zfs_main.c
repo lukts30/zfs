@@ -3560,13 +3560,6 @@ zfs_do_list(int argc, char **argv)
 		fields = default_fields;
 
 	/*
-	 * If we are only going to list snapshot names and sort by name,
-	 * then we can use faster version.
-	 */
-	if (strcmp(fields, "name") == 0 && zfs_sort_only_by_name(sortcol))
-		flags |= ZFS_ITER_SIMPLE;
-
-	/*
 	 * If "-o space" and no types were specified, don't display snapshots.
 	 */
 	if (strcmp(fields, "space") == 0 && types_specified == B_FALSE)
@@ -3592,6 +3585,14 @@ zfs_do_list(int argc, char **argv)
 		usage(B_FALSE);
 
 	cb.cb_first = B_TRUE;
+
+	/*
+	 * If we are only going to list snapshot names and sort by name,
+	 * then we can use faster version.
+	 */
+	if (zfs_list_only_by_fast(cb.cb_proplist) &&
+	    zfs_sort_only_by_fast(sortcol))
+		flags |= ZFS_ITER_SIMPLE;
 
 	ret = zfs_for_each(argc, argv, flags, types, sortcol, &cb.cb_proplist,
 	    limit, list_callback, &cb);

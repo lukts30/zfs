@@ -213,10 +213,57 @@ zfs_free_sort_columns(zfs_sort_column_t *sc)
 }
 
 int
-zfs_sort_only_by_name(const zfs_sort_column_t *sc)
+zfs_sort_only_by_fast(const zfs_sort_column_t *sc)
 {
-	return (sc != NULL && sc->sc_next == NULL &&
-	    sc->sc_prop == ZFS_PROP_NAME);
+	if (sc == NULL) {
+		/* No sort means we don't need any extra properties */
+		return (1);
+	}
+
+	while (sc != NULL) {
+		switch (sc->sc_prop) {
+		case ZFS_PROP_NAME:
+		case ZFS_PROP_GUID:
+		case ZFS_PROP_CREATETXG:
+		case ZFS_PROP_NUMCLONES:
+		case ZFS_PROP_INCONSISTENT:
+		case ZFS_PROP_REDACTED:
+		case ZFS_PROP_ORIGIN:
+			break;
+		default:
+			return (0);
+		}
+		sc = sc->sc_next;
+	}
+
+	return (1);
+}
+
+int
+zfs_list_only_by_fast(const zprop_list_t *p)
+{
+	if (p == NULL) {
+		/* NULL means 'all' so we can't use simple mode */
+		return (0);
+	}
+
+	while (p != NULL) {
+		switch (p->pl_prop) {
+		case ZFS_PROP_NAME:
+		case ZFS_PROP_GUID:
+		case ZFS_PROP_CREATETXG:
+		case ZFS_PROP_NUMCLONES:
+		case ZFS_PROP_INCONSISTENT:
+		case ZFS_PROP_REDACTED:
+		case ZFS_PROP_ORIGIN:
+			break;
+		default:
+			return (0);
+		}
+		p = p->pl_next;
+	}
+
+	return (1);
 }
 
 /* ARGSUSED */
