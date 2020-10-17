@@ -40,14 +40,6 @@ typedef struct zfs_sort_column {
 	boolean_t		sc_reverse;
 } zfs_sort_column_t;
 
-#define	ZFS_ITER_RECURSE	   (1 << 0)
-#define	ZFS_ITER_ARGS_CAN_BE_PATHS (1 << 1)
-#define	ZFS_ITER_PROP_LISTSNAPS    (1 << 2)
-#define	ZFS_ITER_DEPTH_LIMIT	   (1 << 3)
-#define	ZFS_ITER_RECVD_PROPS	   (1 << 4)
-#define	ZFS_ITER_LITERAL_PROPS	   (1 << 5)
-#define	ZFS_ITER_SIMPLE		   (1 << 6)
-
 int zfs_for_each(int, char **, int options, zfs_type_t,
     zfs_sort_column_t *, zprop_list_t **, int, zfs_iter_f, void *);
 int zfs_add_sort_column(zfs_sort_column_t **, const char *, boolean_t);
