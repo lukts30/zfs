@@ -212,12 +212,12 @@ zfs_free_sort_columns(zfs_sort_column_t *sc)
 	}
 }
 
-int
+boolean_t
 zfs_sort_only_by_fast(const zfs_sort_column_t *sc)
 {
 	if (sc == NULL) {
 		/* No sort means we don't need any extra properties */
-		return (1);
+		return (B_TRUE);
 	}
 
 	while (sc != NULL) {
@@ -231,20 +231,20 @@ zfs_sort_only_by_fast(const zfs_sort_column_t *sc)
 		case ZFS_PROP_ORIGIN:
 			break;
 		default:
-			return (0);
+			return (B_FALSE);
 		}
 		sc = sc->sc_next;
 	}
 
-	return (1);
+	return (B_TRUE);
 }
 
-int
+boolean_t
 zfs_list_only_by_fast(const zprop_list_t *p)
 {
 	if (p == NULL) {
 		/* NULL means 'all' so we can't use simple mode */
-		return (0);
+		return (B_FALSE);
 	}
 
 	while (p != NULL) {
@@ -258,12 +258,12 @@ zfs_list_only_by_fast(const zprop_list_t *p)
 		case ZFS_PROP_ORIGIN:
 			break;
 		default:
-			return (0);
+			return (B_FALSE);
 		}
 		p = p->pl_next;
 	}
 
-	return (1);
+	return (B_TRUE);
 }
 
 /* ARGSUSED */

@@ -3587,8 +3587,9 @@ zfs_do_list(int argc, char **argv)
 	cb.cb_first = B_TRUE;
 
 	/*
-	 * If we are only going to list snapshot names and sort by name,
-	 * then we can use faster version.
+	 * If we are only going to list and sort by properties that are "fast"
+	 * then we can use "simple" mode and avoid populating the properties
+	 * nvlist.
 	 */
 	if (zfs_list_only_by_fast(cb.cb_proplist) &&
 	    zfs_sort_only_by_fast(sortcol))
