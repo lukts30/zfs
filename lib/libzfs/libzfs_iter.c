@@ -498,7 +498,7 @@ iter_dependents_cb(zfs_handle_t *zhp, void *arg)
 	ida->first = B_FALSE;
 
 	if (zhp->zfs_type == ZFS_TYPE_SNAPSHOT) {
-		err = zfs_iter_clones(zhp, ida.flags, iter_dependents_cb, ida);
+		err = zfs_iter_clones(zhp, ida->flags, iter_dependents_cb, ida);
 	} else if (zhp->zfs_type != ZFS_TYPE_BOOKMARK) {
 		iter_stack_frame_t isf;
 		iter_stack_frame_t *f;
@@ -532,10 +532,10 @@ iter_dependents_cb(zfs_handle_t *zhp, void *arg)
 		isf.zhp = zhp;
 		isf.next = ida->stack;
 		ida->stack = &isf;
-		err = zfs_iter_filesystems(zhp, ida.flags,
+		err = zfs_iter_filesystems(zhp, ida->flags,
 		    iter_dependents_cb, ida);
 		if (err == 0)
-			err = zfs_iter_snapshots(zhp, ida.flags,
+			err = zfs_iter_snapshots(zhp, ida->flags,
 			    iter_dependents_cb, ida, 0, 0);
 		ida->stack = isf.next;
 	}
