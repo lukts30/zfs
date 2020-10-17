@@ -121,14 +121,16 @@ zfs_iter_filesystems(zfs_handle_t *zhp, int flags, zfs_iter_f func, void *data)
 
 	while ((ret = zfs_do_list_ioctl(zhp, ZFS_IOC_DATASET_LIST_NEXT,
 	    &zc)) == 0) {
+		if (zc.zc_simple)
+			nzhp = make_dataset_simple_handle_zc(zhp, &zc);
+		else
+			nzhp = make_dataset_handle_zc(zhp->zfs_hdl, &zc);
 		/*
 		 * Silently ignore errors, as the only plausible explanation is
 		 * that the pool has since been removed.
 		 */
-		if ((nzhp = make_dataset_handle_zc(zhp->zfs_hdl,
-		    &zc)) == NULL) {
+		if (nzhp == NULL)
 			continue;
-		}
 
 		if ((ret = func(nzhp, data)) != 0) {
 			zcmd_free_nvlists(&zc);
