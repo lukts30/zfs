@@ -4007,7 +4007,7 @@ zfs_do_rollback(int argc, char **argv)
 	if (cb.cb_create > 0)
 		min_txg = cb.cb_create;
 
-	if ((ret = zfs_iter_snapshots(zhp, 0, B_FALSE, rollback_check, &cb,
+	if ((ret = zfs_iter_snapshots(zhp, 0, rollback_check, &cb,
 	    min_txg, 0)) != 0)
 		goto out;
 	if ((ret = zfs_iter_bookmarks(zhp, 0, rollback_check, &cb)) != 0)
