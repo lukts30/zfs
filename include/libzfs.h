@@ -608,7 +608,8 @@ void zprop_print_one_property(const char *, zprop_get_cbdata_t *,
 typedef int (*zfs_iter_f)(zfs_handle_t *, void *);
 extern int zfs_iter_root(libzfs_handle_t *, zfs_iter_f, void *);
 extern int zfs_iter_children(zfs_handle_t *, int, zfs_iter_f, void *);
-extern int zfs_iter_dependents(zfs_handle_t *, int, zfs_iter_f, void *);
+extern int zfs_iter_dependents(zfs_handle_t *, int, boolean_t, zfs_iter_f,
+    void *);
 extern int zfs_iter_filesystems(zfs_handle_t *, int, zfs_iter_f, void *);
 extern int zfs_iter_snapshots(zfs_handle_t *, int, zfs_iter_f, void *,
     uint64_t, uint64_t);
