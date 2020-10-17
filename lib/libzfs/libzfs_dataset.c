@@ -443,7 +443,7 @@ zfs_refresh_properties(zfs_handle_t *zhp)
 static int
 make_dataset_handle_common(zfs_handle_t *zhp, zfs_cmd_t *zc)
 {
-	if (!zc.zc_simple && put_stats_zhdl(zhp, zc) != 0)
+	if (put_stats_zhdl(zhp, zc) != 0)
 		return (-1);
 
 	/*
