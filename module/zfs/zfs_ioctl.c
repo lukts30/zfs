@@ -2035,7 +2035,7 @@ zfs_ioc_objset_stats_impl(zfs_cmd_t *zc, objset_t *os)
 
 	dmu_objset_fast_stat(os, &zc->zc_objset_stats);
 
-	if (zc->zc_nvlist_dst != 0 &&
+	if (!zc->zc_simple && zc->zc_nvlist_dst != 0 &&
 	    (error = dsl_prop_get_all(os, &nv)) == 0) {
 		dmu_objset_stats(os, nv);
 		/*
@@ -2224,12 +2224,6 @@ top:
 		if (error == ENOENT)
 			error = SET_ERROR(ESRCH);
 	} while (error == 0 && zfs_dataset_name_hidden(zc->zc_name));
-	if (error == 0 && zc->zc_simple) {
-		/* fill in only fast stats */
-		dmu_objset_fast_stat(os, &zc->zc_objset_stats);
-		dmu_objset_rele(os, FTAG);
-		return (error);
-	}
 	dmu_objset_rele(os, FTAG);
 
 	/*
@@ -2237,8 +2231,7 @@ top:
 	 * don't try to get stats for it, otherwise we'll return ENOENT.
 	 */
 	if (error == 0 && strchr(zc->zc_name, '$') == NULL) {
-		/* fill in the stats and properties */
-		error = zfs_ioc_objset_stats(zc);
+		error = zfs_ioc_objset_stats(zc); /* fill in the stats */
 		if (error == ENOENT) {
 			/* We lost a race with destroy, get the next one. */
 			zc->zc_name[orig_len] = '\0';
