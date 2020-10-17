@@ -443,7 +443,7 @@ zfs_refresh_properties(zfs_handle_t *zhp)
 static int
 make_dataset_handle_common(zfs_handle_t *zhp, zfs_cmd_t *zc)
 {
-	if (put_stats_zhdl(zhp, zc) != 0)
+	if (!zc.zc_simple && put_stats_zhdl(zhp, zc) != 0)
 		return (-1);
 
 	/*
@@ -530,10 +530,17 @@ make_dataset_simple_handle_zc(zfs_handle_t *pzhp, zfs_cmd_t *zc)
 
 	zhp->zfs_hdl = pzhp->zfs_hdl;
 	(void) strlcpy(zhp->zfs_name, zc->zc_name, sizeof (zhp->zfs_name));
-	zhp->zfs_head_type = pzhp->zfs_type;
-	zhp->zfs_type = ZFS_TYPE_SNAPSHOT;
 	zhp->zpool_hdl = zpool_handle(zhp);
 	zhp->zfs_dmustats = zc->zc_objset_stats; /* structure assignment */
+	zhp->zfs_head_type = pzhp->zfs_type;
+	if (zhp->zfs_dmustats.dds_is_snapshot)
+		zhp->zfs_type = ZFS_TYPE_SNAPSHOT;
+	else if (zhp->zfs_dmustats.dds_type == DMU_OST_ZVOL)
+		zhp->zfs_type = ZFS_TYPE_VOLUME;
+	else if (zhp->zfs_dmustats.dds_type == DMU_OST_ZFS)
+		zhp->zfs_type = ZFS_TYPE_FILESYSTEM;
+	else
+		abort();	/* we should never see any other types */
 
 	return (zhp);
 }
