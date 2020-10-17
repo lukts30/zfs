@@ -181,7 +181,7 @@ zfs_iter_snapshots(zfs_handle_t *zhp, int flags, zfs_iter_f func,
 	while ((ret = zfs_do_list_ioctl(zhp, ZFS_IOC_SNAPSHOT_LIST_NEXT,
 	    &zc)) == 0) {
 
-		if (zc.simple)
+		if (zc.zc_simple)
 			nzhp = make_dataset_simple_handle_zc(zhp, &zc);
 		else
 			nzhp = make_dataset_handle_zc(zhp->zfs_hdl, &zc);
