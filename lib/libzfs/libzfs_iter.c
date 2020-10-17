@@ -181,7 +181,7 @@ zfs_iter_snapshots(zfs_handle_t *zhp, int flags, zfs_iter_f func,
 	while ((ret = zfs_do_list_ioctl(zhp, ZFS_IOC_SNAPSHOT_LIST_NEXT,
 	    &zc)) == 0) {
 
-		if (simple)
+		if (zc.simple)
 			nzhp = make_dataset_simple_handle_zc(zhp, &zc);
 		else
 			nzhp = make_dataset_handle_zc(zhp->zfs_hdl, &zc);
@@ -205,6 +205,7 @@ zfs_iter_snapshots(zfs_handle_t *zhp, int flags, zfs_iter_f func,
 int
 zfs_iter_bookmarks(zfs_handle_t *zhp, int flags, zfs_iter_f func, void *data)
 {
+	zfs_cmd_t zc = {"\0"};
 	zfs_handle_t *nzhp;
 	nvlist_t *props = NULL;
 	nvlist_t *bmarks = NULL;
