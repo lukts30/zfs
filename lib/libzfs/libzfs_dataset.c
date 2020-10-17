@@ -67,7 +67,6 @@
 #include "zfs_prop.h"
 #include "libzfs_impl.h"
 #include "libzfs.h"
-#include "libzfs_iter.h"
 #include "zfs_deleg.h"
 
 static int userquota_propname_decode(const char *propname, boolean_t zoned,
