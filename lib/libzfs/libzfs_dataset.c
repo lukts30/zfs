@@ -2725,6 +2725,8 @@ zfs_prop_get(zfs_handle_t *zhp, zfs_prop_t prop, char *propbuf, size_t proplen,
 
 	case ZFS_PROP_ORIGIN:
 		str = (const char *)&zhp->zfs_dmustats.dds_origin;
+		if (str != NULL && *str == '\0')
+			str = zfs_prop_default_string(prop);
 		(void) strlcpy(propbuf, str, proplen);
 		zcp_check(zhp, prop, 0, str);
 		break;
