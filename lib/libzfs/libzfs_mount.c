@@ -1428,7 +1428,7 @@ zpool_enable_datasets(zpool_handle_t *zhp, const char *mntopts, int flags)
 	 * over all child filesystems.
 	 */
 	libzfs_add_handle(&cb, zfsp);
-	if (zfs_iter_filesystems(zfsp, zfs_iter_cb, &cb) != 0)
+	if (zfs_iter_filesystems(zfsp, 0, zfs_iter_cb, &cb) != 0)
 		goto out;
 
 	/*

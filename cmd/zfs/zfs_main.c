@@ -1391,7 +1391,7 @@ destroy_print_snapshots(zfs_handle_t *fs_zhp, destroy_cbdata_t *cb)
 	int err;
 	assert(cb->cb_firstsnap == NULL);
 	assert(cb->cb_prevsnap == NULL);
-	err = zfs_iter_snapshots_sorted(fs_zhp, destroy_print_cb, cb, 0, 0);
+	err = zfs_iter_snapshots_sorted(fs_zhp, 0, destroy_print_cb, cb, 0, 0);
 	if (cb->cb_firstsnap != NULL) {
 		uint64_t used = 0;
 		if (err == 0) {
@@ -1417,7 +1417,7 @@ snapshot_to_nvl_cb(zfs_handle_t *zhp, void *arg)
 	if (!cb->cb_doclones && !cb->cb_defer_destroy) {
 		cb->cb_target = zhp;
 		cb->cb_first = B_TRUE;
-		err = zfs_iter_dependents(zhp, B_TRUE,
+		err = zfs_iter_dependents(zhp, 0, B_TRUE,
 		    destroy_check_dependent, cb);
 	}
 
@@ -1435,7 +1435,8 @@ gather_snapshots(zfs_handle_t *zhp, void *arg)
 	destroy_cbdata_t *cb = arg;
 	int err = 0;
 
-	err = zfs_iter_snapspec(zhp, cb->cb_snapspec, snapshot_to_nvl_cb, cb);
+	err = zfs_iter_snapspec(zhp, 0, cb->cb_snapspec,
+	    snapshot_to_nvl_cb, cb);
 	if (err == ENOENT)
 		err = 0;
 	if (err != 0)
@@ -1448,7 +1449,7 @@ gather_snapshots(zfs_handle_t *zhp, void *arg)
 	}
 
 	if (cb->cb_recurse)
-		err = zfs_iter_filesystems(zhp, gather_snapshots, cb);
+		err = zfs_iter_filesystems(zhp, 0, gather_snapshots, cb);
 
 out:
 	zfs_close(zhp);
@@ -1473,7 +1474,7 @@ destroy_clones(destroy_cbdata_t *cb)
 			 * false while destroying the clones.
 			 */
 			cb->cb_defer_destroy = B_FALSE;
-			err = zfs_iter_dependents(zhp, B_FALSE,
+			err = zfs_iter_dependents(zhp, 0, B_FALSE,
 			    destroy_callback, cb);
 			cb->cb_defer_destroy = defer;
 			zfs_close(zhp);
@@ -1684,7 +1685,7 @@ zfs_do_destroy(int argc, char **argv)
 		 */
 		cb.cb_first = B_TRUE;
 		if (!cb.cb_doclones &&
-		    zfs_iter_dependents(zhp, B_TRUE, destroy_check_dependent,
+		    zfs_iter_dependents(zhp, 0, B_TRUE, destroy_check_dependent,
 		    &cb) != 0) {
 			rv = 1;
 			goto out;
@@ -1695,7 +1696,7 @@ zfs_do_destroy(int argc, char **argv)
 			goto out;
 		}
 		cb.cb_batchedsnaps = fnvlist_alloc();
-		if (zfs_iter_dependents(zhp, B_FALSE, destroy_callback,
+		if (zfs_iter_dependents(zhp, 0, B_FALSE, destroy_callback,
 		    &cb) != 0) {
 			rv = 1;
 			goto out;
@@ -3907,7 +3908,7 @@ rollback_check(zfs_handle_t *zhp, void *data)
 		}
 
 		if (cbp->cb_recurse) {
-			if (zfs_iter_dependents(zhp, B_TRUE,
+			if (zfs_iter_dependents(zhp, 0, B_TRUE,
 			    rollback_check_dependent, cbp) != 0) {
 				zfs_close(zhp);
 				return (-1);
@@ -4006,10 +4007,10 @@ zfs_do_rollback(int argc, char **argv)
 	if (cb.cb_create > 0)
 		min_txg = cb.cb_create;
 
-	if ((ret = zfs_iter_snapshots(zhp, B_FALSE, rollback_check, &cb,
+	if ((ret = zfs_iter_snapshots(zhp, 0, B_FALSE, rollback_check, &cb,
 	    min_txg, 0)) != 0)
 		goto out;
-	if ((ret = zfs_iter_bookmarks(zhp, rollback_check, &cb)) != 0)
+	if ((ret = zfs_iter_bookmarks(zhp, 0, rollback_check, &cb)) != 0)
 		goto out;
 
 	if ((ret = cb.cb_error) != 0)
@@ -4151,7 +4152,7 @@ zfs_snapshot_cb(zfs_handle_t *zhp, void *arg)
 	free(name);
 
 	if (sd->sd_recursive)
-		rv = zfs_iter_filesystems(zhp, zfs_snapshot_cb, sd);
+		rv = zfs_iter_filesystems(zhp, 0, zfs_snapshot_cb, sd);
 	zfs_close(zhp);
 	return (rv);
 }
@@ -6119,7 +6120,7 @@ zfs_do_allow_unallow_impl(int argc, char **argv, boolean_t un)
 
 		if (un && opts.recursive) {
 			struct deleg_perms data = { un, update_perm_nvl };
-			if (zfs_iter_filesystems(zhp, set_deleg_perms,
+			if (zfs_iter_filesystems(zhp, 0, set_deleg_perms,
 			    &data) != 0)
 				goto cleanup0;
 		}
@@ -6482,7 +6483,7 @@ get_one_dataset(zfs_handle_t *zhp, void *data)
 	/*
 	 * Iterate over any nested datasets.
 	 */
-	if (zfs_iter_filesystems(zhp, get_one_dataset, data) != 0) {
+	if (zfs_iter_filesystems(zhp, 0, get_one_dataset, data) != 0) {
 		zfs_close(zhp);
 		return (1);
 	}
