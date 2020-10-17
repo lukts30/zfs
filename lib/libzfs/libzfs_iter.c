@@ -482,6 +482,7 @@ typedef struct iter_stack_frame {
 
 typedef struct iter_dependents_arg {
 	boolean_t first;
+	int flags;
 	boolean_t allowrecursion;
 	iter_stack_frame_t *stack;
 	zfs_iter_f func;
@@ -489,7 +490,7 @@ typedef struct iter_dependents_arg {
 } iter_dependents_arg_t;
 
 static int
-iter_dependents_cb(zfs_handle_t *zhp, int flags, void *arg)
+iter_dependents_cb(zfs_handle_t *zhp, void *arg)
 {
 	iter_dependents_arg_t *ida = arg;
 	int err = 0;
@@ -497,7 +498,7 @@ iter_dependents_cb(zfs_handle_t *zhp, int flags, void *arg)
 	ida->first = B_FALSE;
 
 	if (zhp->zfs_type == ZFS_TYPE_SNAPSHOT) {
-		err = zfs_iter_clones(zhp, flags, iter_dependents_cb, ida);
+		err = zfs_iter_clones(zhp, ida.flags, iter_dependents_cb, ida);
 	} else if (zhp->zfs_type != ZFS_TYPE_BOOKMARK) {
 		iter_stack_frame_t isf;
 		iter_stack_frame_t *f;
@@ -531,9 +532,10 @@ iter_dependents_cb(zfs_handle_t *zhp, int flags, void *arg)
 		isf.zhp = zhp;
 		isf.next = ida->stack;
 		ida->stack = &isf;
-		err = zfs_iter_filesystems(zhp, flags, iter_dependents_cb, ida);
+		err = zfs_iter_filesystems(zhp, ida.flags,
+		    iter_dependents_cb, ida);
 		if (err == 0)
-			err = zfs_iter_snapshots(zhp, flags,
+			err = zfs_iter_snapshots(zhp, ida.flags,
 			    iter_dependents_cb, ida, 0, 0);
 		ida->stack = isf.next;
 	}
@@ -551,12 +553,13 @@ zfs_iter_dependents(zfs_handle_t *zhp, int flags, boolean_t allowrecursion,
     zfs_iter_f func, void *data)
 {
 	iter_dependents_arg_t ida;
+	ida.flags = flags;
 	ida.allowrecursion = allowrecursion;
 	ida.stack = NULL;
 	ida.func = func;
 	ida.data = data;
 	ida.first = B_TRUE;
-	return (iter_dependents_cb(zfs_handle_dup(zhp), flags, &ida));
+	return (iter_dependents_cb(zfs_handle_dup(zhp), &ida));
 }
 
 /*
