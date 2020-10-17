@@ -1080,7 +1080,7 @@ zfs_iter_cb(zfs_handle_t *zhp, void *data)
 	}
 
 	libzfs_add_handle(cbp, zhp);
-	if (zfs_iter_filesystems(zhp, zfs_iter_cb, cbp) != 0) {
+	if (zfs_iter_filesystems(zhp, 0, zfs_iter_cb, cbp) != 0) {
 		zfs_close(zhp);
 		return (-1);
 	}
