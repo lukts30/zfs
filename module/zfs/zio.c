@@ -2393,7 +2393,7 @@ zio_unsuspend(spa_t *spa)
 	spa->spa_suspend_zio_root = NULL;
 	mutex_exit(&spa->spa_suspend_lock);
 
-	return pio;
+	return (pio);
 }
 
 void
