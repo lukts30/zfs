@@ -148,6 +148,28 @@ out:
 
 }
 
+static int
+zfs_ioc_userns_attach(zfs_cmd_t *zc)
+{
+
+	if (zc == NULL)
+		return (SET_ERROR(EINVAL));
+
+	return (zone_dataset_attach(CRED(), zc->zc_name,
+	    (unsigned int)zc->zc_zoneid));
+}
+
+static int
+zfs_ioc_userns_detach(zfs_cmd_t *zc)
+{
+
+	if (zc == NULL)
+		return (SET_ERROR(EINVAL));
+
+	return (zone_dataset_detach(CRED(), zc->zc_name,
+	    (unsigned int)zc->zc_zoneid));
+}
+
 uint64_t
 zfs_max_nvlist_src_size_os(void)
 {
@@ -166,6 +188,10 @@ zfs_ioctl_update_mount_cache(const char *dsname)
 void
 zfs_ioctl_init_os(void)
 {
+	zfs_ioctl_register_dataset_nolog(ZFS_IOC_USERNS_ATTACH,
+	    zfs_ioc_userns_attach, zfs_secpolicy_config, POOL_CHECK_NONE);
+	zfs_ioctl_register_dataset_nolog(ZFS_IOC_USERNS_DETACH,
+	    zfs_ioc_userns_detach, zfs_secpolicy_config, POOL_CHECK_NONE);
 }
 
 #ifdef CONFIG_COMPAT
