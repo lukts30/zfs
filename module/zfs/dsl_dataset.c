@@ -2706,6 +2706,7 @@ dsl_get_mountpoint(dsl_dataset_t *ds, const char *dsname, char *value,
 	if (value[0] == '/') {
 		char *buf = kmem_alloc(ZAP_MAXVALUELEN, KM_SLEEP);
 		char *root = buf;
+		size_t rootlen;
 		const char *relpath;
 
 		/*
@@ -2725,6 +2726,10 @@ dsl_get_mountpoint(dsl_dataset_t *ds, const char *dsname, char *value,
 		}
 
 		spa_altroot(dp->dp_spa, root, ZAP_MAXVALUELEN);
+
+		rootlen = strlen(root);
+		dsl_prop_get_ds(ds, zfs_prop_to_name(ZFS_PROP_ALTROOT),
+		    1, ZAP_MAXVALUELEN - rootlen, root + rootlen, NULL);
 
 		/*
 		 * Special case an alternate root of '/'. This will

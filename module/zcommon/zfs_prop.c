@@ -588,7 +588,7 @@ zfs_prop_init(void)
 	    "redact_snaps", NULL, PROP_READONLY,
 	    ZFS_TYPE_DATASET | ZFS_TYPE_BOOKMARK, "<snapshot>[,...]",
 	    "RSNAPS");
-	zprop_register_string(ZFS_PROP_ALTROOT, "altroot", NULL, PROP_DEFAULT,
+	zprop_register_string(ZFS_PROP_ALTROOT, "altroot", NULL, PROP_INHERIT,
 	    ZFS_TYPE_FILESYSTEM, "<path>", "ALTROOT");
 
 	/* readonly number properties */

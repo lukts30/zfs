@@ -2727,7 +2727,7 @@ zfs_prop_get(zfs_handle_t *zhp, zfs_prop_t prop, char *propbuf, size_t proplen,
 				root[0] = '\0';
 
 			rootlen = strlen(root);
-			if ((zfs_get_prop(zhp, ZFS_PROP_ALTROOT, root + rootlen,
+			if ((zfs_prop_get(zhp, ZFS_PROP_ALTROOT, root + rootlen,
 			    MAXPATHLEN - rootlen, NULL, NULL, 0, B_FALSE))
 			    || (strcmp(root + rootlen, "-") == 0))
 				root[rootlen] = '\0';
