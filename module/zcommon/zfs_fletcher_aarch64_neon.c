@@ -47,6 +47,9 @@
 #include <sys/spa_checksum.h>
 #include <sys/strings.h>
 #include <zfs_fletcher.h>
+#if defined(__FreeBSD__)
+#include <sys/systm.h>
+#endif
 
 static void
 fletcher_4_aarch64_neon_init(fletcher_4_ctx_t *ctx)
