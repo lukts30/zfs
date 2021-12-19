@@ -76,7 +76,7 @@ for x in $(seq 0 7); do
 	mkdir $TESTDIR/dir$x
 done
 
-log_must zpool sync
+sync_pool
 
 # Get list of all objects, but filter out user/group objects which don't
 # appear when using object or object range arguments

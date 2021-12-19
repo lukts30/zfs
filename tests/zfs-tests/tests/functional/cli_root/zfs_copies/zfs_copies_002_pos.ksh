@@ -67,7 +67,7 @@ done
 #
 # Sync up the filesystem
 #
-sync
+sync_pool
 
 #
 # Verify 'zfs list' can correctly list the space charged

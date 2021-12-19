@@ -129,7 +129,7 @@ while [[ $i -lt ${#disks[*]} ]]; do
 done
 
 log_must kill $killpid
-sync
+sync_pool
 
 typeset dir=$(get_device_dir $DISKS)
 verify_filesys "$TESTPOOL" "$TESTPOOL/$TESTFS" "$dir"

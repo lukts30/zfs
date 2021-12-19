@@ -116,7 +116,7 @@ function setup_snap_env
 			if datasetnonexists $snap; then
 				log_must cp /etc/passwd $fname
 				if is_linux || is_freebsd; then
-					log_must sync
+					sync_pool
 				else
 					#
 					# using 'lockfs -f' to flush the writes

@@ -70,7 +70,7 @@ mkmount_writable $QFS
 log_must user_run $PUSER mkdir $PRJDIR
 log_must chattr +P -p $PRJID1 $PRJDIR
 log_must user_run $PUSER mkfile 50m $PRJDIR/qf
-sync
+sync_pool
 
 log_must zfs snapshot $snap_fs
 

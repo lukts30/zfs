@@ -3103,7 +3103,7 @@ function gen_dataset_name
 function datasetcksum
 {
 	typeset cksum
-	sync
+	sync_pool
 	cksum=$(zdb -vvv $1 | grep "^Dataset $1 \[" | grep "cksum" \
 		| awk -F= '{print $7}')
 	echo $cksum
