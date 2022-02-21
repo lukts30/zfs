@@ -66,15 +66,17 @@ The pool names
 .Sy mirror ,
 .Sy raidz ,
 .Sy draid ,
-.Sy spare
+.Sy spare ,
+.Sy special ,
 and
 .Sy log
 are reserved, as are names beginning with
 .Sy mirror ,
 .Sy raidz ,
 .Sy draid ,
+.Sy spare ,
 and
-.Sy spare .
+.Sy special .
 The
 .Ar vdev
 specification is described in the
@@ -206,6 +208,7 @@ block devices.
 .El
 .
 .Sh SEE ALSO
+.Xr zpoolconcepts 7 ,
 .Xr zpool-destroy 8 ,
 .Xr zpool-export 8 ,
 .Xr zpool-import 8
