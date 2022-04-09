@@ -1454,16 +1454,19 @@ zfs_domount(struct super_block *sb, zfs_mnt_t *zm, int silent)
 	zfsvfs_t *zfsvfs = NULL;
 	vfs_t *vfs = NULL;
 	int canwrite;
+	int dataset_visible_zone;
 
 	ASSERT(zm);
 	ASSERT(osname);
+
+	dataset_visible_zone = zone_dataset_visible(osname, &canwrite);
 
 	/*
 	 * Refuse to mount a filesystem if we are in a namespace and the
 	 * dataset is not visible or writable in that namespace.
 	 */
 	if (!INGLOBALZONE(curproc) &&
-	    (!zone_dataset_visible(osname, &canwrite) || !canwrite)) {
+	    (!dataset_visible_zone || !canwrite)) {
 		return (SET_ERROR(EPERM));
 	}
 
